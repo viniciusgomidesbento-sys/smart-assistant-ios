@@ -13,16 +13,9 @@ import FoundationModels
 @available(macOS 26.0, iOS 18.0, visionOS 2.0, watchOS 11.0, *)
 @Generable
 public struct TaskAnalysisResult: Sendable, Codable {
-    @Property(description: "Título curto da tarefa ou compromisso")
     public var title: String
-
-    @Property(description: "Resumo executivo do que precisa ser feito")
     public var summary: String
-
-    @Property(description: "Nível de prioridade: low, medium, high, urgent")
     public var priority: String
-
-    @Property(description: "Data ou prazo estimado sugerido pela IA")
     public var suggestedDeadline: String?
 
     public init(title: String, summary: String, priority: String, suggestedDeadline: String? = nil) {
@@ -49,6 +42,7 @@ public struct TaskAnalysisResult: Sendable, Codable {
 #endif
 
 // 2. Serviço de Execução de IA On-Device
+@available(macOS 26.0, iOS 18.0, visionOS 2.0, watchOS 11.0, *)
 @Observable
 public final class AIEngine: @unchecked Sendable {
     public static let shared = AIEngine()
@@ -57,22 +51,13 @@ public final class AIEngine: @unchecked Sendable {
     
     public func analyzeText(_ rawText: String) async throws -> TaskAnalysisResult {
         #if canImport(FoundationModels)
-        if #available(macOS 26.0, iOS 18.0, visionOS 2.0, watchOS 11.0, *) {
-            let session = LanguageModelSession()
-            let prompt = """
-            Analise o texto fornecido pelo usuário e extraia uma tarefa organizada.
-            Texto do usuário:
-            "\(rawText)"
-            """
-            return try await session.generate(TaskAnalysisResult.self, prompt: prompt)
-        } else {
-            return TaskAnalysisResult(
-                title: "Tarefa Processada",
-                summary: rawText,
-                priority: "medium",
-                suggestedDeadline: nil
-            )
-        }
+        let session = LanguageModelSession()
+        let prompt = """
+        Analise o texto fornecido pelo usuário e extraia uma tarefa organizada.
+        Texto do usuário:
+        "\(rawText)"
+        """
+        return try await session.generate(TaskAnalysisResult.self, prompt: prompt)
         #else
         return TaskAnalysisResult(
             title: "Tarefa Processada",

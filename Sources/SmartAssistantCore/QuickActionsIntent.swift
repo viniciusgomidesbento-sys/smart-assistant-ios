@@ -24,9 +24,13 @@ public struct ProcessVoiceNoteIntent: AppIntent {
     @MainActor
     public func perform() async throws -> some IntentResult & ProvidesDialog {
         do {
-            let result = try await AIEngine.shared.analyzeText(inputContent)
-            let feedback = "Tarefa criada: '\(result.title)' com prioridade \(result.priority)."
-            return .result(dialog: IntentDialog(stringLiteral: feedback))
+            if #available(macOS 26.0, iOS 18.0, visionOS 2.0, watchOS 11.0, *) {
+                let result = try await AIEngine.shared.analyzeText(inputContent)
+                let feedback = "Tarefa criada: '\(result.title)' com prioridade \(result.priority)."
+                return .result(dialog: IntentDialog(stringLiteral: feedback))
+            } else {
+                return .result(dialog: "Versão do sistema não suporta IA On-Device.")
+            }
         } catch {
             return .result(dialog: "Não foi possível processar a nota: \(error.localizedDescription)")
         }
@@ -34,8 +38,8 @@ public struct ProcessVoiceNoteIntent: AppIntent {
 }
 
 // 2. Provedor de Atalhos Globais no Sistema
+@MainActor
 public struct SmartAssistantShortcuts: AppShortcutsProvider {
-    @MainActor
     public static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: ProcessVoiceNoteIntent(),
