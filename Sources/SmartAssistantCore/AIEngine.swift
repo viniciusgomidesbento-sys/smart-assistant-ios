@@ -1,14 +1,15 @@
-﻿//
-//  AIEngine.swift
-//  SmartAssistantDemo
 //
-//  Demonstração oficial de FoundationModels com @Generable e Tool Calling
+//  AIEngine.swift
+//  SmartAssistantCore
 //
 
 import Foundation
+#if canImport(FoundationModels)
 import FoundationModels
+#endif
 
-// 1. Definição do Tipo de Saída Estruturada com a Macro @Generable
+// 1. Definição do Tipo de Saída Estruturada
+#if canImport(FoundationModels)
 @Generable
 public struct TaskAnalysisResult: Sendable, Codable {
     @Property(description: "Título curto da tarefa ou compromisso")
@@ -20,40 +21,62 @@ public struct TaskAnalysisResult: Sendable, Codable {
     @Property(description: "Nível de prioridade: low, medium, high, urgent")
     public var priority: String
 
-    @Property(description: "Data ou prazo estimado sugerido pela IA (formato ISO8601 ou texto relativo)")
+    @Property(description: "Data ou prazo estimado sugerido pela IA")
     public var suggestedDeadline: String?
 
     @Property(description: "Tags contextuais associadas")
     public var tags: [String]
+    
+    public init(title: String, summary: String, priority: String, suggestedDeadline: String? = nil, tags: [String] = []) {
+        self.title = title
+        self.summary = summary
+        self.priority = priority
+        self.suggestedDeadline = suggestedDeadline
+        self.tags = tags
+    }
 }
+#else
+public struct TaskAnalysisResult: Sendable, Codable {
+    public var title: String
+    public var summary: String
+    public var priority: String
+    public var suggestedDeadline: String?
+    public var tags: [String]
+    
+    public init(title: String, summary: String, priority: String, suggestedDeadline: String? = nil, tags: [String] = []) {
+        self.title = title
+        self.summary = summary
+        self.priority = priority
+        self.suggestedDeadline = suggestedDeadline
+        self.tags = tags
+    }
+}
+#endif
 
 // 2. Serviço de Execução de IA On-Device
 @Observable
-public final class AIEngine {
+public final class AIEngine: @unchecked Sendable {
     public static let shared = AIEngine()
     
-    private var session: LanguageModelSession?
+    public init() {}
     
-    public init() {
-        // Inicializa uma sessão de modelo de linguagem on-device
-        self.session = LanguageModelSession()
-    }
-    
-    /// Analisa qualquer texto desestruturado (áudio transcrito, notas, mensagens)
-    /// e gera dados tipados de forma determinística
     public func analyzeText(_ rawText: String) async throws -> TaskAnalysisResult {
-        guard let session = session else {
-            throw NSError(domain: "AIEngine", code: -1, userInfo: [NSLocalizedDescriptionKey: "Sessão de IA não inicializada"])
-        }
-        
+        #if canImport(FoundationModels)
+        let session = LanguageModelSession()
         let prompt = """
         Analise o texto fornecido pelo usuário e extraia uma tarefa organizada.
         Texto do usuário:
         "\(rawText)"
         """
-        
-        // Chamada guiada com saída garantida no tipo TaskAnalysisResult
-        let response = try await session.generate(TaskAnalysisResult.self, prompt: prompt)
-        return response
+        return try await session.generate(TaskAnalysisResult.self, prompt: prompt)
+        #else
+        return TaskAnalysisResult(
+            title: "Tarefa Processada",
+            summary: rawText,
+            priority: "medium",
+            suggestedDeadline: nil,
+            tags: ["fallback", "ai"]
+        )
+        #endif
     }
 }

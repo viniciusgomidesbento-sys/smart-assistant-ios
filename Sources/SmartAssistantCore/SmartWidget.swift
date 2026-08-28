@@ -1,27 +1,40 @@
-﻿//
-//  SmartWidget.swift
-//  SmartAssistantDemo
 //
-//  WidgetKit, Live Activity (Dynamic Island & Lock Screen) e Control Center Button
+//  SmartWidget.swift
+//  SmartAssistantCore
 //
 
 import WidgetKit
 import SwiftUI
+#if canImport(ActivityKit)
 import ActivityKit
+#endif
 
-// 1. Atributos da Live Activity (Dynamic Island & Lock Screen)
+#if os(iOS)
+// 1. Atributos da Live Activity (iOS & Dynamic Island)
 public struct AIProcessingAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable {
+    public struct ContentState: Codable, Hashable, Sendable {
         public var currentStep: String
         public var progress: Double
         public var itemsProcessed: Int
+        
+        public init(currentStep: String, progress: Double, itemsProcessed: Int) {
+            self.currentStep = currentStep
+            self.progress = progress
+            self.itemsProcessed = itemsProcessed
+        }
     }
 
     public var sessionTitle: String
+    
+    public init(sessionTitle: String) {
+        self.sessionTitle = sessionTitle
+    }
 }
 
 // 2. Visualização na Dynamic Island e Lock Screen
 public struct AIProcessingLiveActivity: Widget {
+    public init() {}
+    
     public var body: some WidgetConfiguration {
         ActivityConfiguration(for: AIProcessingAttributes.self) { context in
             // Lock Screen Banner
@@ -43,7 +56,6 @@ public struct AIProcessingLiveActivity: Widget {
             }
             .padding()
         } dynamicIsland: { context in
-            // Dynamic Island Expanded & Compact
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
                     Label(context.attributes.sessionTitle, systemImage: "sparkles")
@@ -75,3 +87,4 @@ public struct AIProcessingLiveActivity: Widget {
         }
     }
 }
+#endif
