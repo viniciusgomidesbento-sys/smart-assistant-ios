@@ -1,4 +1,4 @@
-﻿name: iOS App Cloud Build (Free macOS Runner)
+name: iOS App Cloud Build (Free macOS Runner)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build Swift Package on Cloud Mac
+    name: Build & Test Swift Package on Cloud Mac
     runs-on: macos-latest
 
     steps:
@@ -24,3 +24,8 @@ jobs:
         run: |
           echo "Compilando código Swift no macOS Cloud Runner..."
           swift build -v
+
+      - name: Run Swift Package Tests
+        run: |
+          echo "Executando suite de testes automatizados..."
+          swift test -v
