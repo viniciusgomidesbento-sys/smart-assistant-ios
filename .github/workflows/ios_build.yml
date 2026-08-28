@@ -7,22 +7,20 @@ on:
 
 jobs:
   build:
-    name: Build & Test iOS Project on Cloud Mac
-    runs-on: macos-14 # Runner oficial da Apple/GitHub com Xcode mais recente
+    name: Build Swift Package on Cloud Mac
+    runs-on: macos-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Select Xcode Version
-        run: sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
-
       - name: Show macOS and Xcode Info
         run: |
           sw_vers
           xcodebuild -version
+          swift --version
 
-      - name: Build Swift Package / Code
+      - name: Build Swift Package
         run: |
-          echo "Compilando código Swift e Frameworks..."
-          # Exemplo: xcodebuild clean build -scheme YourAppScheme -destination 'generic/platform=iOS'
+          echo "Compilando código Swift no macOS Cloud Runner..."
+          swift build -v
