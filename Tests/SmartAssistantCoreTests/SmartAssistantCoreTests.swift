@@ -6,10 +6,8 @@ import Testing
         title: "Test Task",
         summary: "Testing FoundationModels Struct on macOS Runner",
         priority: "high",
-        suggestedDeadline: "2026-08-28T12:00:00Z",
-        tags: ["swift", "test", "apple-intelligence"]
+        suggestedDeadline: "2026-08-28T12:00:00Z"
     )
     #expect(sample.title == "Test Task")
     #expect(sample.priority == "high")
-    #expect(sample.tags.count == 3)
 }
