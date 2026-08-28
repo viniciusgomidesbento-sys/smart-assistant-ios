@@ -1,19 +1,17 @@
-﻿//
-//  QuickActionsIntent.swift
-//  SmartAssistantDemo
 //
-//  Integração profunda com iOS: Siri, Botão de Ação, Atalhos e Central de Controle
+//  QuickActionsIntent.swift
+//  SmartAssistantCore
 //
 
 import Foundation
+#if canImport(AppIntents)
 import AppIntents
 
 // 1. App Intent que pode ser invocado pelo Botão de Ação ou Siri
 public struct ProcessVoiceNoteIntent: AppIntent {
-    public static var title: LocalizedStringResource = "Processar Nota com IA"
-    public static var description = IntentDescription("Analisa um texto ou nota de voz com a IA On-Device e cria uma tarefa organizada.")
+    public static let title: LocalizedStringResource = "Processar Nota com IA"
+    public static let description = IntentDescription("Analisa um texto ou nota de voz com a IA On-Device e cria uma tarefa organizada.")
 
-    // Parâmetro de entrada opcional ou solicitado interativamente pela Siri
     @Parameter(title: "Texto da Nota", description: "O conteúdo que você deseja que a IA processe")
     public var inputContent: String
 
@@ -25,11 +23,8 @@ public struct ProcessVoiceNoteIntent: AppIntent {
 
     @MainActor
     public func perform() async throws -> some IntentResult & ProvidesDialog {
-        // Executa a IA On-Device
         do {
             let result = try await AIEngine.shared.analyzeText(inputContent)
-            
-            // Retorna diálogo falado pela Siri ou exibido na interface
             let feedback = "Tarefa criada: '\(result.title)' com prioridade \(result.priority)."
             return .result(dialog: IntentDialog(stringLiteral: feedback))
         } catch {
@@ -40,6 +35,7 @@ public struct ProcessVoiceNoteIntent: AppIntent {
 
 // 2. Provedor de Atalhos Globais no Sistema
 public struct SmartAssistantShortcuts: AppShortcutsProvider {
+    @MainActor
     public static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: ProcessVoiceNoteIntent(),
@@ -53,3 +49,4 @@ public struct SmartAssistantShortcuts: AppShortcutsProvider {
         )
     }
 }
+#endif
