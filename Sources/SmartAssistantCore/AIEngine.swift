@@ -36,7 +36,7 @@ public final class AIEngine: @unchecked Sendable {
             // Em dispositivos compatíveis com Apple Intelligence
             let session = LanguageModelSession()
             let prompt = "Analise e estruture a tarefa: \(rawText)"
-            let _ = try? await session.send(prompt)
+            let _ = try? await session.respond(to: prompt)
             return TaskAnalysisResult(
                 title: "Tarefa Inteligente",
                 summary: rawText,
