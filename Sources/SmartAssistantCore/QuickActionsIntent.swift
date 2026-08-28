@@ -38,8 +38,8 @@ public struct ProcessVoiceNoteIntent: AppIntent {
 }
 
 // 2. Provedor de Atalhos Globais no Sistema
-@MainActor
-public struct SmartAssistantShortcuts: AppShortcutsProvider {
+public struct SmartAssistantShortcuts: @preconcurrency AppShortcutsProvider {
+    @AppShortcutsBuilder
     public static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: ProcessVoiceNoteIntent(),
