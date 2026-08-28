@@ -1,0 +1,9 @@
+﻿services:
+  apple-webhook-listener:
+    build: .
+    container_name: apple_webhook_listener
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080

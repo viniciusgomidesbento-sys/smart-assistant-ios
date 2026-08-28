@@ -1,0 +1,28 @@
+﻿name: iOS App Cloud Build (Free macOS Runner)
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build & Test iOS Project on Cloud Mac
+    runs-on: macos-14 # Runner oficial da Apple/GitHub com Xcode mais recente
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode Version
+        run: sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
+
+      - name: Show macOS and Xcode Info
+        run: |
+          sw_vers
+          xcodebuild -version
+
+      - name: Build Swift Package / Code
+        run: |
+          echo "Compilando código Swift e Frameworks..."
+          # Exemplo: xcodebuild clean build -scheme YourAppScheme -destination 'generic/platform=iOS'

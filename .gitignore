@@ -1,0 +1,17 @@
+﻿# macOS / Xcode
+.DS_Store
+*.xcworkspace
+*.xcuserdata
+DerivedData/
+.build/
+.swiftpm/
+
+# Python / Backend
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
